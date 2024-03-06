@@ -18,13 +18,6 @@
 #define CLASS_NAME "drv_modules"
 #define DEVICE_NAME "var2"
 
-
-#define ERRORS_CODE
-#define EMPTY_EXPRESSION 3
-#define WRONG_EXPRESSION 2
-#define ZERO_DIVISION 1
-#define NO_ERROR 0
-
 # define LLMAX (long long) 0x7FFFFFFFFFFFFFFF
 
 
