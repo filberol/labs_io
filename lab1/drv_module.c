@@ -1,180 +1,3 @@
-//#include <linux/module.h>
-//#include <linux/version.h>
-//#include <linux/kernel.h>
-//#include <linux/types.h>
-//#include <linux/kdev_t.h>
-//#include <linux/fs.h>
-//#include <linux/device.h>
-//#include <linux/cdev.h>
-//
-//static dev_t first;
-//static struct cdev c_dev;
-//static struct class *cl;
-//
-//struct list_res {
-//    struct list_head list;
-//    long result;
-//    int error;
-//};
-//
-//static struct list_head head_res;
-//
-//static int list_length(struct list_head *head_ptr) {
-//    int len = 0;
-//    struct list_head *ptr;
-//    list_for_each(ptr, head_ptr) {
-//        len++;
-//    }
-//    return len;
-//}
-//
-//static struct proc_dir_entry* entry;
-//
-//static int majorNumber = 0;
-//static int minorNumber = 0;
-//static struct device* chr_device;
-//static struct class* class;
-//
-//static int device_open_count = 0;
-//
-//static int count(const char __user* buffer, size_t len, loff_t* offset) {
-//    int i = 0;
-//    int result;
-//    int operand1 = 0;
-//    int operand2 = 0;
-//    char operator = ' ';
-//
-//
-//    while (buffer[i] >= '0' && buffer[i] <= '9') {
-//        operand1 = (operand1 * 10) + (buffer[i] - '0');
-//        i++;
-//    }
-//
-//    operator = buffer[i];
-//    i++;
-//
-//    while (buffer[i] >= '0' && buffer[i] <= '9') {
-//        operand2 = (operand2 * 10) + (buffer[i] - '0');
-//        i++;
-//    }
-//
-//
-//    switch (operator) {
-//        case '+':
-//            result = operand1 + operand2;
-//            break;
-//        case '-':
-//            result = operand1 - operand2;
-//            break;
-//        case '*':
-//            result = operand1 * operand2;
-//            break;
-//        case '/':
-//            if (operand2 == 0) {
-//                result = 0;
-//            } else {
-//                result = operand1 / operand2;
-//            }
-//            break;
-//        default:
-//            result = -1;
-//    }
-//    return result;
-//}
-//
-//static int my_open(struct inode *i, struct file *f)
-//{
-//    if (device_open_count)
-//        return -EBUSY;
-//    device_open_count++;
-//
-//    try_module_get(THIS_MODULE);
-//
-//    printk(KERN_INFO "Driver: open()\n");
-//    return 0;
-//}
-//
-//static int my_close(struct inode *i, struct file *f)
-//{
-//    device_open_count--;
-//
-//    module_put(THIS_MODULE);
-//
-//    printk(KERN_INFO "Driver: close()\n");
-//    return 0;
-//}
-//
-//static ssize_t my_read(struct file *f, char __user *buf, size_t len, loff_t *off)
-//{
-//printk(KERN_INFO "Driver: read()\n");
-//return 0;
-//}
-//
-//static ssize_t my_write(struct file *f, const char __user *buf,  size_t len, loff_t *off)
-//{
-//printk(KERN_INFO "Driver: write()\n");
-//return len;
-//}
-//
-//static struct file_operations mychdev_fops =
-//        {
-//                .owner = THIS_MODULE,
-//                .open = my_open,
-//                .release = my_close,
-//                .read = my_read,
-//                .write = my_write
-//        };
-//
-//static int __init ch_drv_init(void)
-//{
-//    printk(KERN_INFO "Hello!\n");
-//    if (alloc_chrdev_region(&first, 0, 1, "ch_dev") < 0)
-//    {
-//        return -1;
-//    }
-//    if ((cl = class_create(THIS_MODULE, "chardrv")) == NULL)
-//    {
-//        unregister_chrdev_region(first, 1);
-//        return -1;
-//    }
-//    if (device_create(cl, NULL, first, NULL, "mychdev") == NULL)
-//    {
-//        class_destroy(cl);
-//        unregister_chrdev_region(first, 1);
-//        return -1;
-//    }
-//    cdev_init(&c_dev, &mychdev_fops);
-//    if (cdev_add(&c_dev, first, 1) == -1)
-//    {
-//        device_destroy(cl, first);
-//        class_destroy(cl);
-//        unregister_chrdev_region(first, 1);
-//        return -1;
-//    }
-//    return 0;
-//}
-//
-//static void __exit ch_drv_exit(void)
-//{
-//    cdev_del(&c_dev);
-//    device_destroy(cl, first);
-//    class_destroy(cl);
-//    unregister_chrdev_region(first, 1);
-//    printk(KERN_INFO "Bye!!!\n");
-//}
-//
-//module_init(ch_drv_init);
-//module_exit(ch_drv_exit);
-//
-//MODULE_LICENSE("GPL");
-//MODULE_AUTHOR("Mikhu Vadim, Chernova Anna");
-//MODULE_DESCRIPTION("IO systems first lab, simple symbol driver");
-//
-
-//
-// Created by Sergey Fedorov on 3/4/21.
-//
-
 #ifndef CHARACTER_MODULE
 #define CHARACTER_MODULE
 
@@ -208,7 +31,6 @@
 struct list_res {
     struct list_head list;
     long result;
-    long error;
 };
 
 static struct list_head head_res;
@@ -223,7 +45,6 @@ static int list_length(struct list_head *head_ptr) {
 }
 
 static struct proc_dir_entry* entry;
-int arithmeticError = NO_ERROR;
 
 static int majorNumber = 0;
 static int minorNumber = 0;
@@ -279,32 +100,22 @@ static long process(const char __user* buffer, size_t len, loff_t* offset) {
     switch (operator) {
         case '+':
             result = operand_1 + operand_2;
-            arithmeticError = NO_ERROR;
             break;
         case '-':
             result = operand_1 - operand_2;
-            arithmeticError = NO_ERROR;
             break;
         case '*':
             result = operand_1 * operand_2;
-            arithmeticError = NO_ERROR;
             break;
         case '/':
             if (operand_2 == 0) {
                 result = LLMAX;
-                arithmeticError = ZERO_DIVISION;
             } else {
                 result = operand_1 / operand_2;
-                arithmeticError = NO_ERROR;
             }
             break;
         default:
-            if (wasAny) {
-                arithmeticError = WRONG_EXPRESSION;
-            } else {
-                arithmeticError = EMPTY_EXPRESSION;
-            }
-                result = -1;
+            result = LLMAX;
         }
     return result;
 }
@@ -321,14 +132,12 @@ static int device_open(struct inode* inode, struct file* file) {
     if (device_open_count)
         return -EBUSY;
     device_open_count++;
-
     try_module_get(THIS_MODULE);
     return 0;
 }
 
 static int device_close(struct inode* i, struct file* f) {
     device_open_count--;
-
     module_put(THIS_MODULE);
     return 0;
 }
@@ -336,9 +145,7 @@ static int device_close(struct inode* i, struct file* f) {
 static ssize_t device_write(struct file* filep, const char __user* buffer, size_t len, loff_t* offset) {
     struct list_res *r = kmalloc(sizeof(struct list_res), GFP_KERNEL);
     r->result = process(buffer, len, offset);
-    r->error = arithmeticError;
     list_add(&r->list, &head_res);
-
     return *offset + len;
 }
 
@@ -355,47 +162,21 @@ static ssize_t device_read(struct file* file, char __user *ubuf, size_t count, l
     long long all_sum = 0;
     list_for_each(ptr, &head_res) {
         entry = list_entry(ptr, struct list_res, list);
-        switch (entry->error) {
-            case NO_ERROR: {
-                snprintf(buf+(i*LONG_STR_LEN), LONG_STR_LEN, "Result %ld: %ld\n", list_size - i, entry->result);
-                printk(KERN_NOTICE "%s: Result %ld: %ld\n", THIS_MODULE->name, list_size - i, entry->result);
-                all_sum += entry->result;
-                break;
-            }
-            case ZERO_DIVISION: {
-                snprintf(buf+(i*LONG_STR_LEN), LONG_STR_LEN, "%s\n", "ERR: ZeroDivision");
-                printk(KERN_ALERT "%s: Result %ld: %s\n", THIS_MODULE->name, list_size - i, "ERR: ZeroDivision");
-                break;
-            }
-            case WRONG_EXPRESSION: {
-                snprintf(buf+(i*LONG_STR_LEN), LONG_STR_LEN, "%s\n", "ERR: WrongExpression");
-                printk(KERN_ALERT "%s: Result %ld: %s\n", THIS_MODULE->name, list_size - i, "ERR: WrongExpression");
-                break;
-            }
-            case EMPTY_EXPRESSION: {
-                snprintf(buf+(i*LONG_STR_LEN), LONG_STR_LEN, "%s\n", "ERR: EmptyExpression");
-                printk(KERN_ALERT "%s: Result %ld: %s\n", THIS_MODULE->name, list_size - i, "ERR: EmptyExpression");
-                break;
-            }
-        }
+        snprintf(buf+(i*LONG_STR_LEN), LONG_STR_LEN, "Result %ld: %ld\n", list_size - i, entry->result);
+        printk(KERN_NOTICE "%s: Result %ld: %ld\n", THIS_MODULE->name, list_size - i, entry->result);
+        all_sum += entry->result;
         i++;
     }
 
-    printk(KERN_NOTICE "%s: Sum of all correct expressions: %lld\n", THIS_MODULE->name, all_sum);
     size_t len = LONG_STR_LEN * list_size;
-
     if (*ppos > 0 || count < len){
         return 0;
     }
-
     if (copy_to_user(ubuf, buf, len)){
         return -EFAULT;
     }
-
     *ppos = len;
-
     kfree(buf);
-
     return len;
 }
 
