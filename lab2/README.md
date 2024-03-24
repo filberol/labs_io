@@ -1,63 +1,32 @@
-# Лабораторная работа 1
+# lsblk
+NAME                      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+vramdisk                  252:0    0    50M  0 disk
+├─vramdisk1               252:1    0    10M  0 part
+├─vramdisk2               252:2    0     1K  0 part
+├─vramdisk5               252:5    0     5M  0 part
+└─vramdisk6               252:6    0    15M  0 part 
 
-**Название:** "Разработка драйверов символьных устройств"
+# fdisk -l /dev/vramdisk
+Disk /dev/vramdisk: 50 MiB, 52428800 bytes, 102400 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x36e5756d
 
-**Цель работы:** "Получить знания и навыки разработки драйверов символьных устройств для операционной системы Linux."
+Device         Boot Start   End Sectors Size Id Type
+/dev/vramdisk1          1 20479   20479  10M 83 Linux
+/dev/vramdisk2      20480 61439   40960  20M  5 Extended
+/dev/vramdisk5      20481 30719   10239   5M 83 Linux
+/dev/vramdisk6      40961 71679   30719  15M 83 Linux
 
-## Описание функциональности драйвера
+# Создаём файловые системы в дисках:
+sudo mkfs.vfat /dev/vramdisk1
+sudo mkfs.vfat /dev/vramdisk5
+sudo mkfs.vfat /dev/vramdisk6
 
-При записи в файл символьного устройства текста типа “5+6” должен запоминаться результат операции, то есть 11 для
-данного примера. Должны поддерживаться операции сложения, вычитания, умножения и деления. Последовательность полученных
-результатов с момента загрузки модуля ядра должна выводиться при чтении созданного файла /dev/var2 в консоль
-пользователя. При чтении из файла символьного устройства в кольцевой буфер ядра должен осуществляться вывод тех же
-данных, которые выводятся при чтении файла /dev/var2.
+# Монтируем их:
+sudo mkdir -p /mnt/vram1 && sudo mount -t vfat /dev/vramdisk1 /mnt/vram1
+sudo mkdir -p /mnt/vram5 && sudo mount -t vfat /dev/vramdisk5 /mnt/vram5
+sudo mkdir -p /mnt/vram6 && sudo mount -t vfat /dev/vramdisk6 /mnt/vram6
 
-## Инструкция по сборке
-
-Сборка:
-
-`make build`
-
-Сборка и установка:
-
-`make`
-
-Выгрузка модуля:
-
-`make uninstall`
-
-## Инструкция пользователя
-
-Передача строки в драйвер:
-
-`echo "2 + 2" > /dev/var2`
-
-Чтение результата:
-
-`cat /dev/var2`
-
-## Примеры использования
-
-```user@user-VirtualBox:~/CLionProjects/labs_io/lab1$ echo "3 - 4" > /dev/var2
-user@user-VirtualBox:~/CLionProjects/labs_io/lab1$ echo "3 * 4" > /dev/var2
-user@user-VirtualBox:~/CLionProjects/labs_io/lab1$ echo "3 / 3" > /dev/var2
-user@user-VirtualBox:~/CLionProjects/labs_io/lab1$ echo "3 + 3" > /dev/var2
-user@user-VirtualBox:~/CLionProjects/labs_io/lab1$ cat /dev/var2
-Result 4: 6
-Result 3: 1
-Result 2: 12
-Result 1: -1
-user@user-VirtualBox:~/CLionProjects/labs_io/lab1$ dmesg | tail -n 12
-[ 3597.512701] Loading module
-[ 3597.512706] drv_module: Registered with major 240
-[ 3597.512724] drv_module: Registered device class: drv_modules
-[ 3597.516891] drv_module: Registered device: /dev/var2
-[ 3645.370328] drv_module: Result 4: 6
-[ 3645.370330] drv_module: Result 3: 1
-[ 3645.370331] drv_module: Result 2: 12
-[ 3645.370331] drv_module: Result 1: -1
-[ 3645.370343] drv_module: Result 4: 6
-[ 3645.370344] drv_module: Result 3: 1
-[ 3645.370345] drv_module: Result 2: 12
-[ 3645.370345] drv_module: Result 1: -1
-```
